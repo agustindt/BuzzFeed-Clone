@@ -1,9 +1,10 @@
 const questionDisplay = document.querySelector("#questions");
 const answerDisplay = document.querySelector("#answer");
+
 const questions = [
   {
     id: 0,
-    text: "Pick a holiday destination:",
+    text: "Pick a vacation destination:",
     answers: [
       {
         text: "New York",
@@ -135,29 +136,27 @@ const answers = [
     alt: "Halloumi",
   },
 ];
+// need to have a default answer to compensate for lack of combination data
 
 const unansweredQuestions = [];
 const chosenAnswers = [];
 
-// need to have a default answer to compensate for lack of combination data
 const populateQuestions = () => {
   questions.forEach((question) => {
-    //Create a Block for the title
-    const titleBlock = document.createElement("div"); //document is a floating element it does not mean it actually is on the document
+    const titleBlock = document.createElement("div");
     titleBlock.id = question.id;
     titleBlock.classList.add("title-block");
-    //Create a Block for the Title
     const titleHeading = document.createElement("h2");
     titleHeading.textContent = question.text;
     titleBlock.append(titleHeading);
     questionDisplay.append(titleBlock);
-    //Create a block for the answers
+
     const answersBlock = document.createElement("div");
     answersBlock.id = question.id + "-questions";
     answersBlock.classList.add("answer-options");
 
     unansweredQuestions.push(question.id);
-    //Copilate the div with answer
+
     question.answers.forEach((answer) => {
       const answerBlock = document.createElement("div");
       answerBlock.classList.add("answer-block");
@@ -173,23 +172,24 @@ const populateQuestions = () => {
 
       const answerInfo = document.createElement("p");
       const imageLink = document.createElement("a");
-      imageLink.setAttribute("href", answer.credit);
+      imageLink.setAttribute("href", answer.image);
       imageLink.textContent = answer.credit;
       const sourceLink = document.createElement("a");
       sourceLink.textContent = "Unsplash";
       sourceLink.setAttribute("src", "https://www.unsplash.com");
       answerInfo.append(imageLink, " to ", sourceLink);
+
       answerBlock.append(answerImage, answerTitle, answerInfo);
+
       answersBlock.append(answerBlock);
     });
-    //add answers block to questionDisplay through append
+
     questionDisplay.append(answersBlock);
   });
 };
 populateQuestions();
 
 const handleClick = (questionId, chosenAnswer) => {
-  console.log(questionId, chosenAnswer);
   if (unansweredQuestions.includes(questionId))
     chosenAnswers.push(chosenAnswer);
   const itemToRemove = unansweredQuestions.indexOf(questionId);
@@ -200,13 +200,12 @@ const handleClick = (questionId, chosenAnswer) => {
   console.log(chosenAnswers);
   console.log(unansweredQuestions);
 
-  //disableQuestionBlock(questionid,chosenAnswer)
-
+  disableQuestionBlock(questionId, chosenAnswer);
   const lowestQuestionId = Math.min(...unansweredQuestions);
   location.href = "#" + lowestQuestionId;
 
   if (!unansweredQuestions.length) {
-    //Scroll to answer div
+    location.href = "#answer";
     showAnswer();
   }
 };
@@ -243,4 +242,16 @@ const showAnswer = () => {
   Array.from(allAnswerBlocks).forEach((answerBlock) =>
     answerBlock.replaceWith(answerBlock.cloneNode(true))
   );
+};
+
+const disableQuestionBlock = (questionId, chosenAnswer) => {
+  const currentQuestionBlock = document.getElementById(
+    questionId + "-questions"
+  );
+
+  Array.from(currentQuestionBlock.children).forEach((block) => {
+    if (block.children.item(1).innerText !== chosenAnswer) {
+      block.style.opacity = "50%";
+    }
+  });
 };
